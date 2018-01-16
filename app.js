@@ -5,11 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 const expressLayouts = require('express-ejs-layouts');
+const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require("connect-mongo")(session);
 
 require('./configs/db.config');
 
 var auth = require('./routes/auth.routes');
+var user = require('./routes/user.routes');
 
 var app = express();
 
@@ -33,11 +36,16 @@ app.use(session({
     secure: false,
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 1000
-  }
+  },
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
+    ttl: 24 * 60 * 60
+  })
 }))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', auth);
+app.use('/user', user);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
