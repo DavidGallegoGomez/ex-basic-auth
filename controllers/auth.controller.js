@@ -32,3 +32,40 @@ module.exports.doRegister = (req, res, next) => {
       }
     });
 }
+
+module.exports.login = (req, res, next) => {
+  res.render('auth/login');
+}
+
+module.exports.doLogin = (req, res, next) => {
+
+  function renderWithErrors(errors) {
+    res.render('auth/login', {
+      user: req.body,
+      errors: errors
+    })
+  }
+
+  User.findOne({ email: req.body.email })
+    .then(user => {
+      if (!user) {
+        renderWithErrors({ password: 'Invalid email or password'})
+      } else {
+        return user.checkPassword(req.body.password)
+          .then(match => {
+            if (!match) {
+              renderWithErrors({ password: 'Invalid email or password'})
+            } else {
+              res.redirect('/users');
+            }
+          })
+      }
+    })
+    .catch(error => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        renderWithErrors(error.errors)
+      } else {
+        next(error);
+      }
+    });
+}
