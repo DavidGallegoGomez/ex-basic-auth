@@ -25,6 +25,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session);
 
+app.use((req, res, next) => {
+  res.locals.session = req.session.user;
+  next();
+})
+
 app.use('/', miscRouter);
 app.use('/', authRouter);
 app.use('/users', usersRouter);
