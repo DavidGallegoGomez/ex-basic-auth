@@ -56,6 +56,7 @@ module.exports.doLogin = (req, res, next) => {
             if (!match) {
               renderWithErrors({ password: 'Invalid email or password'})
             } else {
+              res.session.user = user;
               res.redirect('/users');
             }
           })
@@ -68,4 +69,9 @@ module.exports.doLogin = (req, res, next) => {
         next(error);
       }
     });
+}
+
+module.exports.logout = (req, res, next) => {
+  req.session.destroy();
+  res.redirect('/login');
 }
