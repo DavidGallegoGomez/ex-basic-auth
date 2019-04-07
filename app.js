@@ -26,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session);
 
 app.use((req, res, next) => {
+  console.log('path', req.path);
+  res.locals.path = req.path;
   res.locals.session = req.session.user;
   next();
 })
