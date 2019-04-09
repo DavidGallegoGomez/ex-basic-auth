@@ -3,10 +3,12 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const passport = require('passport');
 
 require('./config/db.config');
 require('./config/hbs.config');
 const session = require('./config/session.config');
+require('./config/passport.config');
 
 const miscRouter = require('./routes/misc.routes');
 const authRouter = require('./routes/auth.routes');
@@ -24,11 +26,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session);
+app.use(passport.initialize());
+app.use(passport.session())
+
 
 app.use((req, res, next) => {
-  console.log('path', req.path);
   res.locals.path = req.path;
-  res.locals.session = req.session.user;
+  res.locals.session = req.user;
   next();
 })
 
