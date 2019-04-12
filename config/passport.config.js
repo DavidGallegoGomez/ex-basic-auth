@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
  
 passport.serializeUser((user, next) => {
   next(null, user.id);
@@ -38,16 +39,27 @@ passport.use('google-auth', new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL || '/authenticate/google/cb'
-}, (accessToken, refreshToken, profile, next) => {
-  const googleId = profile.id;
+}, authenticateOAuthUser));
+
+passport.use('facebook-auth', new FacebookStrategy({
+  clientID: process.env.FB_CLIENT_ID,
+  clientSecret: process.env.FB_CLIENT_SECRET,
+  callbackURL: process.env.FB_CALLBACK_URL || '/authenticate/facebook/cb',
+  profileFields: ['displayName', 'email']
+}, authenticateOAuthUser));
+
+function authenticateOAuthUser(accessToken, refreshToken, profile, next) {
+  const provider = `${profile.provider}Id`;
+  const socialId = profile.id;
   const name = profile.displayName;
   const email = profile.emails ? profile.emails[0].value : undefined;
-    User.findOne({ $or: [
+  User.findOne({
+    $or: [
       { email: email },
-      { 'social.googleId': googleId }
-    ]})
+      { [`social.${provider}`]: socialId }
+    ]
+  })
     .then(user => {
-      console.log(Math.random().toString(35));
       if (user) {
         next(null, user);
       } else if (!user) {
@@ -56,7 +68,7 @@ passport.use('google-auth', new GoogleStrategy({
           email: email,
           password: Math.random().toString(35), // Be carefully only for dev purposes, Math.random seed is predictable!!
           social: {
-            googleId: googleId
+            [provider]: socialId
           }
         })
         return user.save()
@@ -64,4 +76,4 @@ passport.use('google-auth', new GoogleStrategy({
       }
     })
     .catch(error => next(error))
-}));
+}

@@ -59,8 +59,9 @@ module.exports.doLogin = (req, res, next) => {
   })(req, res, next);
 }
 
-module.exports.loginWithGoogleCallback = (req, res, next) => {
-  passport.authenticate('google-auth', (error, user) => {
+module.exports.loginWithIDPCallback = (req, res, next) => {
+  const { idp } = req.params; 
+  passport.authenticate(`${idp}-auth`, (error, user) => {
     if (error) {
       next(error);
     } else {
