@@ -45,7 +45,7 @@ passport.use('facebook-auth', new FacebookStrategy({
   clientID: process.env.FB_CLIENT_ID,
   clientSecret: process.env.FB_CLIENT_SECRET,
   callbackURL: process.env.FB_CALLBACK_URL || '/authenticate/facebook/cb',
-  profileFields: ['displayName', 'email']
+  profileFields: ['displayName', 'email', 'picture.type(large)']
 }, authenticateOAuthUser));
 
 function authenticateOAuthUser(accessToken, refreshToken, profile, next) {
@@ -53,6 +53,7 @@ function authenticateOAuthUser(accessToken, refreshToken, profile, next) {
   const socialId = profile.id;
   const name = profile.displayName;
   const email = profile.emails ? profile.emails[0].value : undefined;
+  const avatarURL = profile.picture || profile.photos && profile.photos[0].value;
   User.findOne({
     $or: [
       { email: email },
@@ -69,7 +70,8 @@ function authenticateOAuthUser(accessToken, refreshToken, profile, next) {
           password: Math.random().toString(35), // Be carefully only for dev purposes, Math.random seed is predictable!!
           social: {
             [provider]: socialId
-          }
+          },
+          avatarURL: avatarURL
         })
         return user.save()
           .then(user => next(null, user))
