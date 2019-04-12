@@ -2,36 +2,7 @@
   <div class="row justify-content-md-center">
     <div class="col-xs-12 col-sm-12 col-md-4">
       <form action="/register" method="POST">
-        <div class="form-group">
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
-              <div class="input-group-text"><i class="fas fa-user"></i></div>
-            </div>
-            <input type="text" name="name" class="form-control {{#if errors.name}} is-invalid {{/if}}" placeholder="Name"
-              value="{{ user.name }}" />
-            <div class="invalid-feedback">
-              {{ errors.name }}
-            </div>
-          </div>
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
-              <div class="input-group-text"><i class="fas fa-envelope"></i></div>
-            </div>
-            <input type="text" name="email" class="form-control {{#if errors.email}} is-invalid {{/if}}" placeholder="Email" value="{{ user.email }}"/>
-            <div class="invalid-feedback">
-              {{ errors.email }}
-            </div>
-          </div>
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
-              <div class="input-group-text"><i class="fas fa-lock"></i></div>
-            </div>
-            <input type="password" name="password" class="form-control {{#if errors.password}} is-invalid {{/if}}" placeholder="Password" />
-            <div class="invalid-feedback">
-              {{ errors.password }}
-            </div>
-          </div>
-        </div>
+        {{>user/profile user=user errors=errors}}
         <div class="form-actions">
           <button type="submit" class="btn btn-primary btn-block">Register</button>
         </div>

@@ -43,7 +43,7 @@ module.exports.doLogin = (req, res, next) => {
     if (error) {
       next(error);
     } else if (!user) {
-      res.render('auth/register', {
+      res.render('auth/login', {
         user: req.body,
         errors: validation
       })
@@ -74,6 +74,35 @@ module.exports.loginWithIDPCallback = (req, res, next) => {
       })
     }
   })(req, res, next);
+}
+
+module.exports.profile = (req, res, next) => {
+  res.render('auth/profile')
+}
+
+module.exports.doProfile = (req, res, next) => {
+  if (!req.body.password) {
+    delete req.body.password;
+  }
+
+  if (req.file) {
+    req.body.avatarURL = req.file.secure_url;
+  }
+
+  const user = req.user;
+  Object.assign(user, req.body);
+  user.save()
+    .then(user => res.redirect('/profile'))
+    .catch(error => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        res.render('auth/profile', {
+          user: req.body,
+          errors: error.errors
+        })
+      } else {
+        next(error);
+      }
+    });
 }
 
 module.exports.logout = (req, res, next) => {

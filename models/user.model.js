@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema({
       type: String,
       unique: true
     }
-  }
+  },
+  avatarURL: String
 }, { timestamps: true })
 
 userSchema.pre('save', function(next) {

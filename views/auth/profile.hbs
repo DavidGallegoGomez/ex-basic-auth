@@ -1,0 +1,23 @@
+<div class="container mt-5">
+  <div class="row justify-content-md-center">
+    <div class="col-xs-12 col-sm-12 col-md-4">
+      {{#if session.avatarURL}}
+        <div class="text-center mb-2">
+          <img src="{{ session.avatarURL }}" class="img-fluid rounded" alt="{{ user.name }}">
+        </div>
+      {{/if}}
+      <form action="/profile" method="POST" enctype="multipart/form-data">
+        {{>user/profile user=session errors=errors edit=true}}
+        <div class="form-group">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" name="avatar" id="avatar">
+            <label class="custom-file-label" for="avatar">Choose avatar</label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-block">Edit profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
