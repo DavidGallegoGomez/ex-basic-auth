@@ -59,6 +59,22 @@ module.exports.doLogin = (req, res, next) => {
   })(req, res, next);
 }
 
+module.exports.loginWithGoogleCallback = (req, res, next) => {
+  passport.authenticate('google-auth', (error, user) => {
+    if (error) {
+      next(error);
+    } else {
+      req.login(user, (error) => {
+        if (error) {
+          next(error)
+        } else {
+          res.redirect('/users');
+        }
+      })
+    }
+  })(req, res, next);
+}
+
 module.exports.logout = (req, res, next) => {
   req.logout();
   res.redirect('/login');

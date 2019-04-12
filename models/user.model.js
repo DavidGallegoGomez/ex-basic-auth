@@ -5,6 +5,12 @@ const SALT_WORK_FACTOR = 10;
 const FIRST_ADMIN_EMAIL = process.env.FIRST_ADMIN_EMAIL || 'admin@example.org';
 
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    minlength: [3, 'Name needs at last 8 chars'],
+    trim: true
+  },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -22,6 +28,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['admin', 'guess'],
     default: 'guess'
+  },
+  social: {
+    googleId: {
+      type: String,
+      unique: true
+    }
   }
 }, { timestamps: true })
 
