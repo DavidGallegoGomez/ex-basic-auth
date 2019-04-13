@@ -77,21 +77,23 @@ module.exports.loginWithIDPCallback = (req, res, next) => {
 }
 
 module.exports.profile = (req, res, next) => {
-  res.render('auth/profile')
+  res.render('auth/profile'); // Ya se tiene el usuario con 'locals', NO hay que pasarlo por hbs
 }
 
 module.exports.doProfile = (req, res, next) => {
-  if (!req.body.password) {
-    delete req.body.password;
+  delete req.body.email; // Se quitan para no mostrar ni editar (PROGRAMACIÓN DEFENSIVA)
+  delete req.body.role; // Si los necesitamos ya están en la sesión
+  if (!req.body.password) { // El string va vacío y no se debería cambiar la contraseña
+    delete req.body.password; // Se elimina para no cambiar el password
   }
 
   if (req.file) {
     req.body.avatarURL = req.file.secure_url;
   }
 
-  const user = req.user;
+  const user = req.user; // Se puede buscar en MongoDB pero ya tenemos al usuario en la sesión
   Object.assign(user, req.body);
-  user.save()
+  user.save() // Es más optimo que findAndUpdate()
     .then(user => res.redirect('/profile'))
     .catch(error => {
       if (error instanceof mongoose.Error.ValidationError) {

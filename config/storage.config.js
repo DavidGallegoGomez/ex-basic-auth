@@ -10,11 +10,11 @@ cloudinary.config({
 
 const storage = cloudinaryStorage({
   cloudinary: cloudinary,
-  folder: 'profile-avatars',
+  folder: 'profile-avatars', // Puede ser el nombre del proyecto
   allowFormats: ['jpg', 'png'],
   filename: (req, file, next) => {
-    next(null, `${Date.now()}${file.originalname}`)
+    next(null, `${Date.now()}${file.originalname}`) // Nombre único para el fichero que se sube
   }
-})
+}) // También se puede poner validaciones con el tamaño del fichero (el máximo estará marcado por el servidor)
 
 module.exports = multer({ storage });

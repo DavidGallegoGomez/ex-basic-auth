@@ -56,7 +56,7 @@ function authenticateOAuthUser(accessToken, refreshToken, profile, next) {
   const avatarURL = profile.picture || profile.photos && profile.photos[0].value;
   User.findOne({
     $or: [
-      { email: email },
+      { email: email }, // Para que un usuario pueda logarse con gmail y password (y luego quiere entrar con su cuenta de Google)
       { [`social.${provider}`]: socialId }
     ]
   })
